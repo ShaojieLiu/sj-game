@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>打砖块</title>
+        <link rel="stylesheet" href="./css/index.css">
+    </head>
+    <body>
+        <canvas id="id-canvas" width="300" height="300"></canvas>
+<script type="text/javascript">
+var e = (sel) => document.querySelector(sel)
+var es = (sel) => Array.from(document.querySelectorAll(sel))
+var log = console.log
+
+const imgFromPath = (path) => {
+    const img = new Image()
+    img.src = path
+    return img
+}
+
+const Paddle = function() {
+    this.img = imgFromPath('paddle.png')
+    this.x = 100
+    this.y = 200
+    this.speed = 5
+    this.moveLeft = () => {this.x -= this.speed}
+    this.moveRight = () => {this.x += this.speed}
+}
+
+const SJGame = function() {
+    this.canvas = e('#id-canvas')
+    this.ctx = canvas.getContext('2d')
+    setInterval(() => {
+        // update
+        if (leftDown) {paddle.moveLeft()}
+        if (rightDown) {paddle.moveRight()}
+        // render
+        ctx.clearRect(0, 0, w, h)
+        ctx.drawImage(paddle.img, paddle.x, paddle.y)
+    }, 1000 / fps)
+}
+
+var __main = function() {
+    const game = new SJGame()
+
+
+    const w = canvas.width
+    const h = canvas.height
+    const fps = 30
+
+    const paddle = new Paddle()
+    // let x = 100
+    // let y = 200
+    let leftDown = false
+    let rightDown = false
+    // let speed = 5
+
+    window.addEventListener('keydown', (ev) => {
+        var k = ev.key
+        if (k === 'a') {leftDown = true}
+        if (k === 'd') {rightDown = true}
+    })
+
+    window.addEventListener('keyup', (ev) => {
+        var k = ev.key
+        if (k === 'a') {leftDown = false}
+        if (k === 'd') {rightDown = false}
+    })
+
+
+}
+
+__main()
+
+</script>
+    </body>
+</html>
