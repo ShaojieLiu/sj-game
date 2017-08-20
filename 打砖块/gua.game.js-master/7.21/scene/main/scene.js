@@ -1,4 +1,4 @@
-var Scene = function(game) {
+var Scene = function(game, config = {}) {
     var s = {
         game: game,
     }
@@ -8,7 +8,7 @@ var Scene = function(game) {
 
     var score = 0
 
-    var blocks = loadLevel(game, 1)
+    var blocks = config.blocks || loadLevel(game, 1)
 
     game.registerAction('a', function(){
         paddle.moveLeft()

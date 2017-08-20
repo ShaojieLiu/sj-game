@@ -41,7 +41,7 @@ class GuaGame {
         this.actions[key] = callback
     }
     runloop() {
-        log(window.fps)
+        // log(window.fps)
         // events
         var g = this
         var actions = Object.keys(g.actions)
@@ -65,7 +65,7 @@ class GuaGame {
     }
     imageByName(name) {
         var g = this
-        log('image by name', g.images)
+        // log('image by name', g.images)
         var img = g.images[name]
         var image = {
             w: img.width,
