@@ -30,13 +30,28 @@ const Paddle = function() {
 const SJGame = function() {
     this.canvas = e('#id-canvas')
     this.ctx = canvas.getContext('2d')
-    setInterval(() => {
-        // update
+    this.leftDown = false
+    this.rightDown = false
+
+    const w = canvas.width
+    const h = canvas.height
+    const fps = 30
+
+    this.update = () => {
         if (leftDown) {paddle.moveLeft()}
         if (rightDown) {paddle.moveRight()}
+    }
+
+    this.draw = () => {
+        this.ctx.clearRect(0, 0, w, h)
+        this.ctx.drawImage(paddle.img, paddle.x, paddle.y)
+    }
+
+    setInterval(() => {
+        // update
+        this.update()
         // render
-        ctx.clearRect(0, 0, w, h)
-        ctx.drawImage(paddle.img, paddle.x, paddle.y)
+        this.draw()
     }, 1000 / fps)
 }
 
@@ -44,15 +59,12 @@ var __main = function() {
     const game = new SJGame()
 
 
-    const w = canvas.width
-    const h = canvas.height
-    const fps = 30
+
 
     const paddle = new Paddle()
     // let x = 100
     // let y = 200
-    let leftDown = false
-    let rightDown = false
+
     // let speed = 5
 
     window.addEventListener('keydown', (ev) => {
