@@ -32,6 +32,7 @@ var __main = function() {
     }
     var game = GuaGame.instance(30, images, function(g){
         var s = new ScenePlaying(g)
+        // s.init()
         g.runWithScene(s)
     })
 

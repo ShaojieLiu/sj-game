@@ -15,7 +15,7 @@ class GuaGame {
         window.addEventListener('keydown', event => {
             this.keydowns[event.key] = true
         })
-        window.addEventListener('keyup', function(event){
+        window.addEventListener('keyup', event => {
             self.keydowns[event.key] = false
         })
         this.init()
@@ -25,8 +25,8 @@ class GuaGame {
         this.i = this.i || new this(...args)
         return this.i
     }
-    drawImage(img) {
-        this.context.drawImage(img.texture.image, img.x, img.y)
+    drawImage(img, x, y) {
+        this.context.drawImage(img.texture.image, x || img.x, y || img.y)
     }
     // update
     update() {
@@ -77,6 +77,7 @@ class GuaGame {
     runWithScene(scene) {
         var g = this
         g.scene = scene
+        // scene.init()
         // 开始运行程序
         setTimeout(function(){
             g.runloop()
@@ -84,6 +85,7 @@ class GuaGame {
     }
     replaceScene(scene) {
         this.scene = scene
+        // scene.init()
     }
     __start(scene) {
         this.runCallback(this)
@@ -111,5 +113,6 @@ class GuaGame {
                 }
             }
         }
+
     }
 }
