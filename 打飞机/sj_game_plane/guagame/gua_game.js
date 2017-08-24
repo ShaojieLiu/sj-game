@@ -28,6 +28,13 @@ class GuaGame {
     drawImage(img, x, y) {
         this.context.drawImage(img.texture.image, x || img.x, y || img.y)
     }
+    text(text) {
+        const t = text
+        const ctx = this.context
+        ctx.font = "20px Comic Sans MS"
+        ctx.fillStyle = "white"
+        ctx.fillText(t.text, t.x, t.y)
+    }
     // update
     update() {
         this.scene.update()
