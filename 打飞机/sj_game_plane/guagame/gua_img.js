@@ -1,6 +1,6 @@
 class GuaImage {
     constructor(game, name, pos = {x: 0, y: 0}) {
-        console.log(pos)
+        // console.log(pos)
         this.texture = game.textureByName(name)
         this.x = pos.x
         this.y = pos.y
