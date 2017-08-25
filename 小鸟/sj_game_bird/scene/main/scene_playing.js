@@ -2,7 +2,7 @@ class ScenePlaying extends GuaScene {
     constructor(game) {
         super(game)
         this.game = game
-        this.bg = new GuaImage(game, 'background')
+        this.bg = new GuaImage(game, 'sky')
 
         this.eles = [new Hero(game)]
         this.init()

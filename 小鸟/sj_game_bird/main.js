@@ -24,14 +24,12 @@ var enableDebugMode = function(game, enable) {
 
 var __main = function() {
     var images = {
-        background: 'img/background.png',
-        bullet1: 'img/bullet1.png',
-        bullet2: 'img/bullet2.png',
-        hero1: 'img/hero1.png',
-        hero2: 'img/hero2.png',
-        cloud1: 'img/cloud1.png',
-        enemy1: 'img/enemy1.png',
-        enemy2: 'img/enemy2.png',
+        bird: 'img/bird.png',
+        sky: 'img/sky.png',
+        clouds: 'img/clouds.png',
+        finger: 'img/finger.png',
+        land: 'img/land.png',
+        ceiling: 'img/ceiling.png',
     }
     var game = GuaGame.instance(30, images, function(g){
         var s = new ScenePlaying(g)
