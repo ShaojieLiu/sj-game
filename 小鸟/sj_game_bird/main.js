@@ -24,6 +24,7 @@ var enableDebugMode = function(game, enable) {
 
 var __main = function() {
     var images = {
+        bullet1: 'img/bullet1.png',
         bird: 'img/bird.png',
         sky: 'img/sky.png',
         clouds: 'img/clouds.png',

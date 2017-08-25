@@ -4,7 +4,7 @@ class ScenePlaying extends GuaScene {
         this.game = game
         this.bg = new GuaImage(game, 'sky')
 
-        this.eles = [new Hero(game)]
+        this.eles = [new Bullet(game), new Sky(game), new Hero(game)]
         this.init()
     }
 
@@ -13,6 +13,7 @@ class ScenePlaying extends GuaScene {
     }
 
     update() {
+        this.eles.forEach(ele => ele.update())
 
     }
     draw() {
@@ -38,17 +39,33 @@ class Label {
     }
 }
 
+class Sky {
+    constructor(game) {
+        this.game = game
+        this.img = new GuaImage(game, 'sky', this)
+        this.x = 0
+        this.y = 0
+    }
+    update() {
+
+    }
+    draw() {
+        this.game.drawImage(this.img, this.x, this.y)
+        // console.log('sky draw')
+    }
+}
+
 class Bullet {
     constructor(game, param = {x: 100, y: 100}) {
         this.game = game
         this.speed = -11
         this.life = 1
-        this.name = 'bullet2'
+        this.name = 'bullet1'
         Object.assign(this, param)
         this.img = new GuaImage(this.game, this.name, this)
     }
     update() {
-        if (this.y < 0) {
+        if (this.y < 0 || this.y > e('#id-canvas').height) {
             this.life = 0
         }
         this.y += this.speed
@@ -61,10 +78,17 @@ class Bullet {
 class Hero {
     constructor(game) {
         this.game = game
-        this.x = 100
-        this.y = 450
-        this.img = new GuaImage(this.game, 'bird', this)
-        this.speed = 7
+        this.x = 150
+        this.y = 300
+        this.vx = 0
+        this.vy = 0
+        this.ax = 0
+        this.ay = 1.5
+        // this.ay = 0
+        this.angleFactor = 1.5
+        // this.zl = 0
+        this.speed = 5
+        this.bird = new Bird(this.game, 'bird', 2)
         this.init()
         this.life = 1
     }
@@ -74,10 +98,10 @@ class Hero {
         const s = this.speed
 
         const actionDict = [
-            {a: () => {this.x -= s}},
-            {d: () => {this.x += s}},
-            {w: () => {this.y -= s}},
-            {s: () => {this.y += s}},
+            {a: () => {this.vx -= s}},
+            {d: () => {this.vx += s}},
+            {w: () => {this.vy -= s}},
+            {s: () => {this.vy += s}},
         ]
 
         const keyOf = obj => Object.keys(obj)[0]
@@ -90,13 +114,18 @@ class Hero {
         this.registerMove()
     }
 
-    draw() {
-        this.game.drawImage(this.img, this.x, this.y)
-        // this.eles.forEach(ele => ele.draw())
+    update() {
+        this.bird.update()
+        this.x += this.vx
+        this.y += this.vy
+        this.vx += this.ax
+        this.vy += this.ay
+        this.angle = this.vy * this.angleFactor
     }
 
-    update() {
-
+    draw() {
+        this.bird.draw(this.x, this.y, this.angle)
+        // this.eles.forEach(ele => ele.draw())
     }
 }
 

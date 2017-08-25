@@ -28,6 +28,18 @@ class GuaGame {
     drawImage(img, x, y) {
         this.context.drawImage(img.texture.image, x || img.x, y || img.y)
     }
+    drawFrame(img, param) {
+        const {sx, sy, swidth, sheight, x, y, deg} = param
+        const ctx = this.context
+        const rad = deg * 3.14 / 180
+        ctx.translate(x, y)
+        ctx.rotate(rad)
+        ctx.drawImage(img.texture.image, sx, sy, swidth, sheight, -swidth / 2, - sheight / 2, swidth, sheight)
+        ctx.setTransform(1, 0, 0, 1, 0, 0)
+        // ctx.translate(12, 17)
+        // ctx.translate(0, 0)
+
+    }
     text(text) {
         const t = text
         const ctx = this.context
@@ -62,7 +74,9 @@ class GuaGame {
         // update
         g.update()
         // clear
-        g.context.clearRect(0, 0, g.canvas.width, g.canvas.height)
+        const w = g.canvas.width
+        const h = g.canvas.height
+        g.context.clearRect(-w, -h, 2 * w, 2 * h)
         // draw
         g.draw()
         // next run loop
@@ -72,8 +86,8 @@ class GuaGame {
     }
     textureByName(name) {
         var g = this
-        log('image by name', g.images, name)
         var img = g.images[name]
+        log('image by name', img, g.images, name)
         var image = {
             w: img.width,
             h: img.height,
