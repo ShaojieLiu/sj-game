@@ -6,12 +6,12 @@ class ScenePlaying extends GuaScene {
         this.enemyCD = 200
         this.cloudCD = 600
         this.loopCount = 0
-        this.label = new Label(game)
 
         this.bulletHero = []
         this.bulletEnemy = []
         this.enemy = []
         this.hero = [new Hero(this.game)]
+        this.label = new Label(game, this.hero[0])
         this.other = [this.label]
 
         this.eles = this.getEles()
@@ -20,13 +20,7 @@ class ScenePlaying extends GuaScene {
     }
 
     init() {
-        // this.bulletHero = []
-        // this.enemy = []
-        // this.hero = [new Hero(this.game)]
-        // this.other = [this.label]
-        // this.bulletEnemy = []
-        //
-        // this.eles = this.getEles()
+
     }
 
     getEles() {
@@ -43,8 +37,8 @@ class ScenePlaying extends GuaScene {
         const {enemy1, enemy2} = param
         const baseEnemy1 = {x: 100, y: 100, speed: 4, name: 'enemy1', life: 2}
         const baseEnemy2 = {x: 100, y: 100, speed: 2, name: 'enemy2', life: 4}
-        const enemyDict1 = enemy1.map(d => Object.assign({}, baseEnemy1, d))
-        const enemyDict2 = enemy2.map(d => Object.assign({}, baseEnemy2, d))
+        const enemyDict1 = enemy1.map(d => Object.assign({}, baseEnemy1, d, {speed: 4 + Math.random()}))
+        const enemyDict2 = enemy2.map(d => Object.assign({}, baseEnemy2, d, {speed: 2 + Math.random()}))
         const enemyDict = [].concat(enemyDict1, enemyDict2)
         enemyDict.forEach(p => this.enemy.push(new Enemy(this.game, p)))
     }
@@ -70,26 +64,34 @@ class ScenePlaying extends GuaScene {
         this.addEnemy({enemy1, enemy2})
         // this.addCloud([{x: 0, y: -200}])
     }
+
+    damage(b, plane, addScore, particleName) {
+        const h = plane
+        b.life--
+        h.life--
+        this.label.score += addScore
+        this.other.push(new ParticleSystem(this.game, {x: b.x, y: b.y + 30, life: 6, name: particleName}))
+    }
+
     update() {
         // 英雄子弹撞敌机
         this.bulletHero.forEach(b => this.enemy.forEach(e => {
             if (isIntersect(b, e)) {
-                b.life--
-                e.life--
-                this.label.score++
-                // console.log(b)
-                this.other.push(new ParticleSystem(this.game, {x: b.x, y: b.y, life: 5}))
+                this.damage(b, e, 1, 'bullet2')
             }
         }))
 
         // diji子弹撞
         this.bulletEnemy.forEach(b => this.hero.forEach(h => {
             if (isIntersect(b, h)) {
-                b.life--
-                h.life--
-                this.label.score = this.label.score - 20
-                // console.log(b)
-                this.other.push(new ParticleSystem(this.game, {x: b.x, y: b.y + 30, life: 6, name: 'bullet1'}))
+                this.damage(b, h, -20, 'bullet1')
+            }
+        }))
+
+        // 敌机撞
+        this.enemy.forEach(e => this.hero.forEach(h => {
+            if (isIntersect(e, h)) {
+                this.damage(e, h, -20, 'bullet1')
             }
         }))
 
@@ -99,11 +101,6 @@ class ScenePlaying extends GuaScene {
         Object.assign(this, {bulletHero, bulletEnemy, enemy, hero, other})
 
         this.eles = this.getEles()
-        //     this.bulletHero,
-        //     this.enemy,
-        //     this.hero,
-        //     this.other,
-        // ]
 
         // TODO, 暂时这么加敌机
         if (this.loopCount % this.enemyCD === 0) {
@@ -158,18 +155,18 @@ class ScenePlaying extends GuaScene {
 }
 
 class Label {
-    constructor(game, param = {x: 100, y: 100}) {
-        this.game = game
-        Object.assign(this, param)
+    constructor(game, hero, param = {x: 100, y: 100}) {
+        Object.assign(this, param, {game, hero})
         this.life = 1
         this.score = 0
     }
     update() {
+
     }
     draw() {
         this.game.text({
-            text: '分数: ' + this.score,
-            x: 300,
+            text: '生命: ' + this.hero.life + '  分数: ' + this.score,
+            x: 230,
             y: 580,
         })
     }
@@ -249,7 +246,7 @@ class Bullet {
         this.img = new GuaImage(this.game, this.name, this)
     }
     update() {
-        if (this.y < 0) {
+        if (this.y < 0 || this.y > e('#id-canvas').height) {
             this.life = 0
         }
         this.y += this.speed
@@ -310,12 +307,12 @@ class Hero {
 class Enemy {
     constructor(game, param = {x: 100, y: 100, speed: 4, name: 'enemy1', life: 1}) {
         this.game = game
-        Object.assign(this, param)
-        this.img = new GuaImage(this.game, this.name, this)
         this.init()
         this.sec = -1
         this.coolDown = 90 - Math.random() * 30
         this.cd = this.coolDown
+        Object.assign(this, param)
+        this.img = new GuaImage(this.game, this.name, this)
     }
     init() {
 
