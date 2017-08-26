@@ -10,6 +10,8 @@ class GuaGame {
         this.keydowns = {}
         this.canvas = document.querySelector('#id-canvas')
         this.context = this.canvas.getContext('2d')
+        this.w = this.canvas.width
+        this.h = this.canvas.height
         // events
         var self = this
         window.addEventListener('keydown', event => {
@@ -25,20 +27,27 @@ class GuaGame {
         this.i = this.i || new this(...args)
         return this.i
     }
-    drawImage(img, x, y) {
-        this.context.drawImage(img.texture.image, x || img.x, y || img.y)
-    }
-    drawFrame(img, param) {
-        const {sx, sy, swidth, sheight, x, y, deg} = param
+    drawImage(img, x, y, deg = 0) {
+        x = x === undefined ? img.x : x
+        y = y === undefined ? img.y : y
         const ctx = this.context
         const rad = deg * 3.14 / 180
+        ctx.setTransform(1, 0, 0, 1, 0, 0)
+        ctx.translate(img.w / 2 + x, img.h / 2 + y)
+        ctx.rotate(rad)
+        ctx.drawImage(img.texture.image, - img.w / 2, - img.h / 2)
+        ctx.setTransform(1, 0, 0, 1, 0, 0)
+    }
+    drawFrame(img, param) {
+        const {sx, sy, swidth, sheight, x, y, deg, w, h} = param
+        const ctx = this.context
+        const rad = deg * 3.14 / 180
+        ctx.setTransform(1, 0, 0, 1, 0, 0)
         ctx.translate(x, y)
         ctx.rotate(rad)
-        ctx.drawImage(img.texture.image, sx, sy, swidth, sheight, -swidth / 2, - sheight / 2, swidth, sheight)
+        ctx.drawImage(img.texture.image, sx, sy, swidth, sheight, - w / 2, - h / 2, w, h)
         ctx.setTransform(1, 0, 0, 1, 0, 0)
-        // ctx.translate(12, 17)
-        // ctx.translate(0, 0)
-
+        console.log(x, y, w, h)
     }
     text(text) {
         const t = text

@@ -1,20 +1,21 @@
 class ScenePlaying extends GuaScene {
     constructor(game) {
         super(game)
-        this.game = game
-        this.bg = new GuaImage(game, 'sky')
-
-        this.eles = [new Bullet(game), new Sky(game), new Hero(game)]
+        this.g = game
         this.init()
     }
 
     init() {
-
+        this.eles = [
+            new Sky(this.g),
+            new FingerSystem(this.g),
+            new Player(this.g),
+            new Land(this.g)
+        ]
     }
 
     update() {
         this.eles.forEach(ele => ele.update())
-
     }
     draw() {
         this.eles.forEach(ele => ele.draw())
@@ -39,21 +40,6 @@ class Label {
     }
 }
 
-class Sky {
-    constructor(game) {
-        this.game = game
-        this.img = new GuaImage(game, 'sky', this)
-        this.x = 0
-        this.y = 0
-    }
-    update() {
-
-    }
-    draw() {
-        this.game.drawImage(this.img, this.x, this.y)
-        // console.log('sky draw')
-    }
-}
 
 class Bullet {
     constructor(game, param = {x: 100, y: 100}) {
@@ -75,7 +61,7 @@ class Bullet {
     }
 }
 
-class Hero {
+class Player {
     constructor(game) {
         this.game = game
         this.x = 150
@@ -84,11 +70,9 @@ class Hero {
         this.vy = 0
         this.ax = 0
         this.ay = 1.5
-        // this.ay = 0
-        this.angleFactor = 1.5
-        // this.zl = 0
+        this.angleFactor = 2
         this.speed = 5
-        this.bird = new Bird(this.game, 'bird', 2)
+        this.bird = new Bird(game)
         this.init()
         this.life = 1
     }
