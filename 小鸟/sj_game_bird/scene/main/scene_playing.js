@@ -1,19 +1,18 @@
-class ScenePlaying extends GuaScene {
+class SceneTitle extends GuaScene {
     constructor(game) {
         super(game)
         this.g = game
-        this.init()
-    }
-
-    init() {
+        this.player = new Player(this.g, {ay: 0})
         this.eles = [
             new Sky(this.g),
-            new FingerSystem(this.g),
-            new Player(this.g),
-            new Land(this.g)
+            this.player,
+            new Land(this.g),
+            new Title(game, 'title', {x: 110, y: 100}),
+            new Title(game, 'btn_play', {x: 140, y: 200}),
+            new Text(game, '按下 "W" 来开始游戏 !', {x: 100, y: 305}),
         ]
+        this.g.registerAction('w', () => this.g.replaceScene(new ScenePlaying(this.g)))
     }
-
     update() {
         this.eles.forEach(ele => ele.update())
     }
@@ -22,50 +21,119 @@ class ScenePlaying extends GuaScene {
     }
 }
 
-class Label {
-    constructor(game, hero, param = {x: 100, y: 100}) {
-        Object.assign(this, param, {game, hero})
-        this.life = 1
-        this.score = 0
+class Score {
+    constructor(game, scene) {
+        this.g = game
+        this.s = scene
+        // this.img = new GuaImage(game, '0', {x: 200, y: 80})
     }
     update() {
-
+        const numString = this.s.score.toString().split('')
+        const l = numString.length
+        this.eles = numString.map((num, i) => {
+            return new GuaImage(this.g, num, {x: 200 + 30 * i - (30 * l / 2), y: 80})
+        })
     }
     draw() {
-        this.game.text({
-            text: '生命: ' + this.hero.life + '  分数: ' + this.score,
-            x: 230,
-            y: 580,
-        })
+        this.eles.forEach(e => this.g.drawImage(e))
+        // this.g.drawImage(this.img)
     }
 }
 
-
-class Bullet {
-    constructor(game, param = {x: 100, y: 100}) {
-        this.game = game
-        this.speed = -11
-        this.life = 1
-        this.name = 'bullet1'
+class Text {
+    constructor(game, text, param) {
+        this.g = game
+        this.text = text
         Object.assign(this, param)
-        this.img = new GuaImage(this.game, this.name, this)
     }
     update() {
-        if (this.y < 0 || this.y > e('#id-canvas').height) {
-            this.life = 0
-        }
-        this.y += this.speed
     }
     draw() {
-        this.game.drawImage(this.img, this.x, this.y)
+        this.g.text(this)
+    }
+}
+
+class Title {
+    constructor(game, name, param) {
+        this.img = new GuaImage(game, name, param)
+        this.g = game
+        Object.assign(this, param)
+    }
+    update() {
+    }
+    draw() {
+        this.g.drawImage(this.img, this.x, this.y)
+    }
+}
+
+class ScenePlaying extends GuaScene {
+    constructor(game) {
+        super(game)
+        this.g = game
+        this.g.hardness = 0
+        this.player = new Player(this.g)
+        this.score = 0
+        this.eles = [
+            new Sky(this.g),
+            this.player,
+            new Land(this.g),
+            new Score(this.g, this)
+        ]
+        this.init()
+    }
+
+    init() {
+        this.fingers = new FingerSystem(this.g)
+        this.eles.splice(1, 0, this.fingers)
+    }
+
+    del(ele) {
+        const index = this.eles.indexOf(ele)
+        if (index !== -1) {
+            this.eles.splice(index, 1)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    crashDetect(fingers, player) {
+        const b = player.bird
+        const isCrash = fingers.eles.some(f => f.eles.some(e => isPointIn([b.x, b.y], getSpace(e))))
+
+        if (isCrash && this.player.life > 0) {
+            this.player.life--
+            log('GAME OVER !')
+        }
+    }
+
+    update() {
+        this.eles.forEach(ele => ele.update())
+        this.crashDetect(this.fingers, this.player)
+        if (this.player.life > 0) {
+            const fs = this.fingers
+            if (fs.count === fs.cd) {
+                this.score++
+                log(this.score)
+            }
+        } else {
+            this.g.registerAction('r', () => this.g.replaceScene(new ScenePlaying(this.g)))
+            this.eles.push(new Text(this.g, '按下 "R" 来重新开始 !', {x: 100, y: 305}))
+            this.eles.push(new Title(this.g, 'text_game_over', {x: 100, y: 200}))
+        }
+    }
+    draw() {
+        this.eles.forEach(ele => ele.draw())
+        // console.log(this.eles[1].eles.length)
     }
 }
 
 class Player {
-    constructor(game) {
-        this.game = game
-        this.x = 150
-        this.y = 300
+    constructor(game, param) {
+        this.g = game
+        this.initX = 200
+        this.x = 200
+        this.y = 350
         this.vx = 0
         this.vy = 0
         this.ax = 0
@@ -75,17 +143,18 @@ class Player {
         this.bird = new Bird(game)
         this.init()
         this.life = 1
+        Object.assign(this, param)
     }
 
     registerMove() {
-        const g = this.game
+        const g = this.g
         const s = this.speed
 
         const actionDict = [
-            {a: () => {this.vx -= s}},
-            {d: () => {this.vx += s}},
-            {w: () => {this.vy -= s}},
-            {s: () => {this.vy += s}},
+            {a: () => {this.x -= s}},
+            {d: () => {this.x += s}},
+            {w: () => {this.vy -= this.life > 0  ? s : 0}},
+            {s: () => {this.vy += this.life > 0 ? s : 0}},
         ]
 
         const keyOf = obj => Object.keys(obj)[0]
@@ -99,12 +168,23 @@ class Player {
     }
 
     update() {
-        this.bird.update()
+        if (this.y < 0) {
+            this.life--
+        }
+        if (this.y < this.g.h - 80) {
+            this.y += this.vy
+            this.vy += this.ay
+        }
+        if (this.life > 0) {
+            this.x += ( this.initX - this.x ) * 0.05
+            this.vx += this.ax
+        } else {
+            // this.vx = -5
+        }
         this.x += this.vx
-        this.y += this.vy
-        this.vx += this.ax
-        this.vy += this.ay
+
         this.angle = this.vy * this.angleFactor
+        this.bird.update()
     }
 
     draw() {
@@ -113,14 +193,13 @@ class Player {
     }
 }
 
-const getSpace = (instance) => {
-    const a = instance
-    return {
-        x1: a.x,
-        y1: a.y,
-        x2: a.x + a.img.texture.w,
-        y2: a.y + a.img.texture.h
-    }
+const isIntersect = (a, b) => {
+    // debugger
+    // log(a, b)
+    const aSpace = getSpace(a)
+    const bSpace = getSpace(b)
+    return get4points(aSpace).some(p => isPointIn(p, bSpace)) ||
+        get4points(bSpace).some(p => isPointIn(p, aSpace))
 }
 
 const isPointIn = function(point, space) {
@@ -132,6 +211,17 @@ const isPointIn = function(point, space) {
     )
 }
 
+const getSpace = (instance) => {
+    const a = instance
+    return {
+        x1: a.x,
+        y1: a.y,
+        x2: a.x + a.w,
+        y2: a.y + a.h,
+    }
+}
+
+
 const get4points = (space) => {
     const s = space
     return [
@@ -142,8 +232,13 @@ const get4points = (space) => {
     ]
 }
 
-const isIntersect = (a, b) => {
-    const aSpace = getSpace(a)
-    const bSpace = getSpace(b)
-    return get4points(aSpace).map(p => isPointIn(p, bSpace)).filter(is => is).length !== 0
-}
+log(isIntersect(
+    {
+        x: 120, y: 319,
+        w: 73, h:483
+    },
+    {
+        x: 150, y: 529,
+        w: 51, h: 36
+    }
+))

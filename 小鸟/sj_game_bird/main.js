@@ -23,17 +23,36 @@ var enableDebugMode = function(game, enable) {
 }
 
 var __main = function() {
-    var images = {
-        bullet1: 'img/bullet1.png',
-        bird: 'img/bird.png',
-        sky: 'img/sky.png',
-        clouds: 'img/clouds.png',
-        finger: 'img/finger.png',
-        land: 'img/land.png',
-        ceiling: 'img/ceiling.png',
-    }
+    const imgNameArr = [
+        'sky',
+        'bird',
+        'finger',
+        'land',
+
+        'text_game_over',
+        'text_ready',
+        'title',
+
+        'btn_pause',
+        'btn_play',
+        'btn_resume',
+
+        '1', '2', '3', '4', '5',
+        '6', '7', '8', '9', '0',
+    ]
+    var images = {}
+    imgNameArr.forEach(name => images[name] = `img/${name}.png`)
+    // var images = {
+    //     bird: 'img/bird.png',
+    //     sky: 'img/sky.png',
+    //     finger: 'img/finger.png',
+    //     land: 'img/land.png',
+    //
+    //     text_game_over: ''
+    // }
     var game = GuaGame.instance(30, images, function(g){
-        var s = new ScenePlaying(g)
+        var s = new SceneTitle(g)
+        // var s = new ScenePlaying(g)
         // s.init()
         g.runWithScene(s)
     })

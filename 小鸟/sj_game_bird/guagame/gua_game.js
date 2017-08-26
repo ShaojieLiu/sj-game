@@ -47,14 +47,16 @@ class GuaGame {
         ctx.rotate(rad)
         ctx.drawImage(img.texture.image, sx, sy, swidth, sheight, - w / 2, - h / 2, w, h)
         ctx.setTransform(1, 0, 0, 1, 0, 0)
-        console.log(x, y, w, h)
+        // console.log(x, y, w, h)
     }
     text(text) {
         const t = text
         const ctx = this.context
         ctx.font = "20px Comic Sans MS"
-        ctx.fillStyle = "white"
+        ctx.strokeStyle = "gray"
+        ctx.fillStyle = "royalblue"
         ctx.fillText(t.text, t.x, t.y)
+        ctx.strokeText(t.text, t.x, t.y)
     }
     // update
     update() {
@@ -96,7 +98,7 @@ class GuaGame {
     textureByName(name) {
         var g = this
         var img = g.images[name]
-        log('image by name', img, g.images, name)
+        // log('image by name', img, g.images, name)
         var image = {
             w: img.width,
             h: img.height,
