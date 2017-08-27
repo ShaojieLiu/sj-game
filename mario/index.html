@@ -6,8 +6,14 @@
     </head>
     <body>
         <canvas id="canvas" width="640" height="640"></canvas>
+        <br/>
+        <button class='config-btn' data-key='pageNum' data-value='-1'>prev</button>
+        <button class='config-btn' data-key='pageNum' data-value='1'>next</button>
+<script>
+const e = sel => document.querySelector(sel)
+const es = sel => Array.from(document.querySelectorAll(sel))
+const log = console.log.bind(console)
 
-<script type="text/javascript">
 /*
 8x8 像素 / 图块
 2 bits / 像素
@@ -15,8 +21,90 @@
 
 每页 8X8 个图块 canvas 宽高画 64 像素
  */
-const e = sel => document.querySelector(sel)
-const log = console.log.bind(console)
+
+const configInit = () => {
+    window.config = {
+        pageNum: 0
+
+    }
+}
+
+const bindAll = () => {
+    es('.config-btn').forEach(ele => {
+        ele.addEventListener('click', ev => {
+            const t = ev.target
+            if (t.dataset.key) {
+                eval(`window.config.${t.dataset.key} += ${Number(t.dataset.value)}`)
+                log('click', window.config)
+                drawNes()
+            }
+        })
+    })
+}
+
+const drawPixel = (p, offsetX, offsetY, count) => {
+    // log(p)
+    offsetX *= 1
+    offsetY *= 4
+    const pixelW = 10
+    const colors = [
+        'white',
+        'red',
+        'green',
+        'royalblue',
+    ]
+    const x = (offsetX + count) * pixelW
+    const y = (offsetY) * pixelW
+    const x2 = x + pixelW
+    const y2 = y + pixelW
+    const ctx = e('#canvas').getContext('2d')
+    ctx.fillStyle = colors[Number(p)]
+    ctx.fillRect(x, y, x2, y2)
+}
+
+const drawBlock = (block, offsetX, offsetY) => {
+    // log('block', block.length, block, block.map(b => b.toString(2)))
+    let index = 0
+    offsetX *= 8
+    offsetY *= 8
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 2; j++) {
+            const oneByte = block[index]
+            const byte4pixel = [
+                oneByte >> 6 & 3,
+                oneByte >> 4 & 3,
+                oneByte >> 2 & 3,
+                oneByte >> 0 & 3,
+            ]
+            // log('byte', oneByte.toString(2), byte4pixel)
+            const x = offsetX + j
+            const y = offsetY + i
+            byte4pixel.forEach((p, count) => drawPixel(p, x, y, count))
+            index++
+        }
+    }
+}
+
+const drawPage = () => {
+    const page = getPage(window.bytes)
+    log('page', page, page.length)
+    let index = 0
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+            const block = page.slice(0).splice(index, 16)
+            drawBlock(block, j, i)
+            index += 16
+        }
+    }
+}
+
+const drawNes = () => {
+    /*
+    78, 69, 83, 26
+     */
+    // log('bytes', bytes)
+    drawPage()
+}
 
 const ajax = request => {
     let r = new XMLHttpRequest()
@@ -24,21 +112,32 @@ const ajax = request => {
     r.responseType = 'arraybuffer'
     r.onreadystatechange = ev => {
         if (r.readyState === 4) {
-            request.cb(r.responese)
+            request.cb(r.response)
         }
     }
     r.send()
 }
 
-const __main = () => {
+const loadData = next => {
     let request = {
         url: 'mario.nes',
         cb(r) {
-            let bytes = new Uint8Array(r)
-            log('bytes', bytes)
+            window.bytes = new Uint8Array(r)
+            next()
         }
     }
     ajax(request)
+}
+
+const getPage = bytes => {
+    const index = window.config.pageNum * 1024
+    return Array.from(bytes).slice(0).splice(index, 1024)
+}
+
+const __main = () => {
+    configInit()
+    loadData(drawNes)
+    bindAll()
 }
 
 __main()
