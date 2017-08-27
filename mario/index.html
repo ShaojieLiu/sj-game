@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Mario</title>
+    </head>
+    <body>
+        <canvas id="canvas" width="640" height="640"></canvas>
+
+<script type="text/javascript">
+/*
+8x8 像素 / 图块
+2 bits / 像素
+16 bytes / 图块
+
+每页 8X8 个图块 canvas 宽高画 64 像素
+ */
+const e = sel => document.querySelector(sel)
+const log = console.log.bind(console)
+
+const ajax = request => {
+    let r = new XMLHttpRequest()
+    r.open('GET', request.url, true)
+    r.responseType = 'arraybuffer'
+    r.onreadystatechange = ev => {
+        if (r.readyState === 4) {
+            request.cb(r.responese)
+        }
+    }
+    r.send()
+}
+
+const __main = () => {
+    let request = {
+        url: 'mario.nes',
+        cb(r) {
+            let bytes = new Uint8Array(r)
+            log('bytes', bytes)
+        }
+    }
+    ajax(request)
+}
+
+__main()
+</script>
+
+    </body>
+</html>
