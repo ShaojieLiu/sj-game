@@ -5,11 +5,18 @@
         <title>Mario</title>
     </head>
     <body>
-        <canvas id="canvas" width="640" height="640"></canvas>
+        <canvas id="canvas" width="384" height="384"></canvas>
+        <canvas id="mario" width="96" height="192"></canvas>
+        <canvas id="mario-walking" width="96" height="192"></canvas>
         <br/>
+
         <button class='config-btn' data-key='byteNum' data-value='-1024'>prev</button>
         <button class='config-btn' data-key='byteNum' data-value='1024'>next</button>
         <span class='config-val' data-key='byteNum'>0</span>
+
+        <button class='config-btn' data-key='marioIndex' data-value='-128'>prev</button>
+        <button class='config-btn' data-key='marioIndex' data-value='128'>next</button>
+        <span class='config-val' data-key='marioIndex'>0</span>
 <script>
 const e = sel => document.querySelector(sel)
 const es = sel => Array.from(document.querySelectorAll(sel))
@@ -26,8 +33,11 @@ const log = console.log.bind(console)
 
 const configInit = () => {
     window.config = {
-        byteNum: 32768 
+        byteNum: 32768 + 16,
+        marioIndex: 32784,
+        // byteNum: 0,
     }
+    es('.config-val').forEach(ele => ele.innerHTML = window.config[ele.dataset.key])
 }
 
 const bindAll = () => {
@@ -37,75 +47,95 @@ const bindAll = () => {
             if (t.dataset.key) {
                 eval(`window.config.${t.dataset.key} += ${Number(t.dataset.value)}`)
                 es('.config-val').forEach(ele => ele.innerHTML = window.config[ele.dataset.key])
-                log('click', window.config)
                 drawNes()
             }
         })
     })
 }
 
-const drawPixel = (p, offsetX, offsetY) => {
+const drawPixel = (canvas, p, offsetX, offsetY) => {
     // log(p)
     // offsetX *= 1
     // offsetY *= 4
-    const pixelSize = 10
+    const pixelSize = 6
     const colors = [
         'white',
-        '#fbb100',
-        '#716900',
-        '#dc0000',
+        '#ef3b3a',
+        '#ffcc66',
+        '#986828',
     ]
     const x = (offsetX) * pixelSize
     const y = (offsetY) * pixelSize
     const x2 = x + pixelSize
     const y2 = y + pixelSize
-    const ctx = e('#canvas').getContext('2d')
-    ctx.fillStyle = colors[Number(p)]
-    ctx.fillRect(x, y, x2, y2)
+    const ctx = e(canvas).getContext('2d')
+    const color = colors[Number(p)]
+    if (color !== '0') {
+        ctx.fillStyle = color
+        ctx.fillRect(x, y, x2, y2)
+    }
 }
 
-const drawBlock = (block, offsetX, offsetY) => {
+const drawBlock = (canvas, block, offsetX, offsetY) => {
     // log('block', block.length, block, block.map(b => b.toString(2)))
     offsetX *= 8
     offsetY *= 8
     for (let i = 0; i < 8; i++) {
         const p1 = block[i]
-        const p2 = block[i + 1]
+        const p2 = block[i + 8]
         let result = []
         for (let j = 0; j < 8; j++) {
             // debugger
-            const c1 = p1 >> (7 - j) & 0b00000001
-            const c2 = p2 >> (7 - j) & 0b00000001
-            const p = c1 << 1 | c2
+            const c1 = (p1 >> (7 - j)) & 0b00000001
+            const c2 = (p2 >> (7 - j)) & 0b00000001
+            const p = c2 << 1 | c1
             const x = offsetX + j
             const y = offsetY + i
             result.push(p)
-            drawPixel(p, x, y)
+            drawPixel(canvas, p, x, y)
         }
-        // log(result)
-        // let twoByte = block[i] << 8 | block[i + 1]
-        // // log(twoByte.toString(2), block[i].toString(2), block[i + 1].toString(2))
-        // twoByte = twoByte.toString(4)
-        // for (let j = 0; j < 8; j++) {
-        //     const p = twoByte[j]
-        //     const x = offsetX + j
-        //     const y = offsetY + i
-        //     drawPixel(p, x, y)
-        // }
+        // log(p1, p2, '\n')
     }
 }
 
-const drawPage = () => {
+const getPage = (bytes) => {
+    const index = window.config.byteNum
+    return Array.from(bytes).slice(0).splice(index, 1024)
+}
+
+const drawPage = (canvas) => {
     const page = getPage(window.bytes)
     log('page', page, page.length)
     let index = 0
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             const block = page.slice(0).splice(index, 16)
-            drawBlock(block, j, i)
+            drawBlock(canvas, block, j, i)
             index += 16
         }
     }
+}
+
+const drawMario = (canvas, marioIndex) => {
+    marioIndex = marioIndex || window.config.marioIndex
+    const data = Array.from(bytes).slice(0).splice(marioIndex, 128)
+    let index = 0
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 2; j++) {
+            const block = data.slice(0).splice(index, 16)
+            drawBlock(canvas, block, j, i)
+            index += 16
+        }
+    }
+}
+
+const drawWalking = () => {
+    let index = 0
+    setInterval(() => {
+        drawMario('#mario-walking', 32784 + index * 128)
+        index++
+        if (index === 3) {index = 0}
+    }, 1000 / 5)
 }
 
 const drawNes = () => {
@@ -113,7 +143,9 @@ const drawNes = () => {
     78, 69, 83, 26
      */
     // log('bytes', bytes)
-    drawPage()
+    drawPage('#canvas')
+    drawMario('#mario')
+    drawWalking()
 }
 
 const ajax = request => {
@@ -130,6 +162,7 @@ const ajax = request => {
 
 const loadData = next => {
     let request = {
+        url: 'super_mario.nes',
         url: 'mario1.nes',
         cb(r) {
             window.bytes = new Uint8Array(r)
@@ -137,11 +170,6 @@ const loadData = next => {
         }
     }
     ajax(request)
-}
-
-const getPage = bytes => {
-    const index = window.config.byteNum
-    return Array.from(bytes).slice(0).splice(index, 1024)
 }
 
 const __main = () => {
