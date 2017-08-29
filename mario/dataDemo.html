@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Mario</title>
+        <style>
+            .ctn-canvas{
+                background-color: lightskyblue;
+            }
+        </style>
+    </head>
+    <body>
+        <div class='ctn-canvas'>
+            <canvas id="canvas" width="96" height="1536"></canvas>
+            <canvas id="mario" width="96" height="192"></canvas>
+            <canvas id="mario-walking" width="96" height="192"></canvas>
+        </div>
+
+        <Config></Config>
+<script src="helpers/utils.js"></script>
+
+<script src="helpers/configInit.js"></script>
+<script src="helpers/loadData.js"></script>
+<script src="helpers/draw.js"></script>
+
+
+<script src="demo/dataDemo.js"></script>
+<script>
+
+/*
+8x8 像素 / 图块
+2 bits / 像素
+16 bytes / 图块
+
+每页 8X8 个图块 canvas 宽高画 64 像素
+1024 byte / 页
+ */
+
+</script>
+
+    </body>
+</html>

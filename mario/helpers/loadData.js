@@ -12,8 +12,7 @@ const ajax = request => {
 
 const loadData = next => {
     let request = {
-        // url: 'super_mario.nes',
-        url: './res/mario.nes',
+        url: `./res/${window.config.nes}`,
         cb(r) {
             window.bytes = new Uint8Array(r)
             next()

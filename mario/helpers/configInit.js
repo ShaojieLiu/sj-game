@@ -1,8 +1,10 @@
 const configInit = () => {
     window.config = {
+        pixelSize: 3,
         byteNum: 32768 + 16,
         marioIndex: 32784,
         marioId: 0,
+        nes: 'mario.nes',
     }
     es('.config-val').forEach(ele => ele.innerHTML = window.config[ele.dataset.key])
 }
