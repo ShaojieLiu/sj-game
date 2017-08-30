@@ -4,16 +4,21 @@
         <meta charset="utf-8">
         <title>Mario</title>
         <style>
+            canvas{
+                border: lightskyblue dashed 1px;
+            }
             .ctn-canvas{
-                background-color: lightskyblue;
+                background-color: lightgray;
             }
         </style>
     </head>
     <body>
         <div class='ctn-canvas'>
-            <canvas id="canvas" width="96" height="1536"></canvas>
-            <canvas id="mario" width="96" height="192"></canvas>
-            <canvas id="mario-walking" width="96" height="192"></canvas>
+            <canvas id="canvas" width="0" height="0"></canvas>
+            <canvas id="mario" width="0" height="0"></canvas>
+            <canvas id="diy1" width="0" height="0"></canvas>
+            <canvas id="diy2" width="0" height="0"></canvas>
+            <canvas id="mario-walking" width="0" height="0"></canvas>
         </div>
 
         <Config></Config>
@@ -22,9 +27,11 @@
 <script src="helpers/configInit.js"></script>
 <script src="helpers/loadData.js"></script>
 <script src="helpers/draw.js"></script>
+<script src="helpers/click2draw.js"></script>
 
 
-<script src="demo/dataDemo.js"></script>
+
+        <script src="demo/dataDemo.js"></script>
 <script>
 
 /*

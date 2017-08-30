@@ -1,5 +1,7 @@
-window.couters = {};
+// window.couters = {};
+
 const drawPixel = (canvas, p, offsetX, offsetY) => {
+    // debugger
     const pixelSize = window.config.pixelSize
     const colors = [
         '0',
@@ -13,20 +15,21 @@ const drawPixel = (canvas, p, offsetX, offsetY) => {
     const y2 = y + pixelSize
     const color = colors[Number(p)]
     const ctx = e(canvas).getContext('2d')
-    const key = canvas + '-' + x + '-' + y;
-    if(couters[key] === undefined){
-        couters[key] = 0
-    }
-    couters[key] = couters[key] + 1;
+    // const key = canvas + '-' + x + '-' + y;
+    // if(couters[key] === undefined){
+    //     couters[key] = 0
+    // }
+    // couters[key] = couters[key] + 1;
     if (color !== '0') {
         ctx.fillStyle = color
-        ctx.fillRect(x, y, x2, y2)
+        ctx.fillRect(x, y, pixelSize, pixelSize)
     }else{
-        ctx.clearRect(x, y, x2, y2)
+        ctx.clearRect(x, y, pixelSize, pixelSize)
     }
 }
 
 const drawBlock = (canvas, block, offsetX, offsetY) => {
+    log(block, block.length)
     offsetX *= 8
     offsetY *= 8
     for (let i = 0; i < 8; i++) {
@@ -51,11 +54,10 @@ const getPage = (bytes) => {
 const drawPage = (canvas) => {
     const page = getPage(window.bytes)
     log('page', page, page.length)
-    const w = 2
+    const w = 8
     const h = 8
-    e(canvas).width = w * window.config.pixelSize * 8
-    e(canvas).height = h * window.config.pixelSize * 8
-    e(canvas).getContext('2d').clearRect(0, 0, 999, 999)
+    resizeAndClear(canvas, w, h)
+
     let index = 0
     for (let i = 0; i < h; i++) {
         for (let j = 0; j < w; j++) {
@@ -69,9 +71,8 @@ const drawPage = (canvas) => {
 const drawMario = (canvas, marioIndex) => {
     const w = 2
     const h = 4
-    e(canvas).width = w * window.config.pixelSize * 8
-    e(canvas).height = h * window.config.pixelSize * 8
-    e(canvas).getContext('2d').clearRect(0, 0, 999, 999)
+    resizeAndClear(canvas, w, h)
+
     marioIndex = marioIndex || window.config.marioIndex
     const data = Array.from(bytes).slice(0).splice(marioIndex, 128)
     let index = 0
@@ -82,6 +83,11 @@ const drawMario = (canvas, marioIndex) => {
             index += 16
         }
     }
+}
+
+const drawDiy = (canvas, w, h) => {
+    resizeAndClear(canvas, w, h)
+    bindDiy(canvas)
 }
 
 const drawWalking = (canvas) => {
