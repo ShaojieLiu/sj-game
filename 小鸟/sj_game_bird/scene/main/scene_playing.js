@@ -9,9 +9,11 @@ class SceneTitle extends GuaScene {
             new Land(this.g),
             new Title(game, 'title', {x: 110, y: 100}),
             new Title(game, 'btn_play', {x: 140, y: 200}),
-            new Text(game, '按下 "W" 来开始游戏 !', {x: 100, y: 305}),
+            new Text(game, '按下 "W" 来开始游戏 !', {x: 100, y: 290}),
+            new Text(game, '按下 " I " 来加入 2 P !', {x: 100, y: 320}),
         ]
         this.g.registerAction('w', () => this.g.replaceScene(new ScenePlaying(this.g)))
+        this.g.registerAction('i', () => this.g.replaceScene(new Scene2player(this.g)))
     }
     update() {
         this.eles.forEach(ele => ele.update())
@@ -21,57 +23,13 @@ class SceneTitle extends GuaScene {
     }
 }
 
-class Score {
-    constructor(game, scene) {
-        this.g = game
-        this.s = scene
-        // this.img = new GuaImage(game, '0', {x: 200, y: 80})
-    }
-    update() {
-        const numString = this.s.score.toString().split('')
-        const l = numString.length
-        this.eles = numString.map((num, i) => {
-            return new GuaImage(this.g, num, {x: 200 + 30 * i - (30 * l / 2), y: 80})
-        })
-    }
-    draw() {
-        this.eles.forEach(e => this.g.drawImage(e))
-        // this.g.drawImage(this.img)
-    }
-}
-
-class Text {
-    constructor(game, text, param) {
-        this.g = game
-        this.text = text
-        Object.assign(this, param)
-    }
-    update() {
-    }
-    draw() {
-        this.g.text(this)
-    }
-}
-
-class Title {
-    constructor(game, name, param) {
-        this.img = new GuaImage(game, name, param)
-        this.g = game
-        Object.assign(this, param)
-    }
-    update() {
-    }
-    draw() {
-        this.g.drawImage(this.img, this.x, this.y)
-    }
-}
-
 class ScenePlaying extends GuaScene {
     constructor(game) {
+        console.log('start playing')
         super(game)
         this.g = game
         this.g.hardness = 0
-        this.player = new Player(this.g)
+        this.player = new Player(this.g, {btn: 'w'})
         this.score = 0
         this.gameover = false
         this.eles = [
@@ -89,55 +47,81 @@ class ScenePlaying extends GuaScene {
     }
 
     del(ele) {
-        const index = this.eles.indexOf(ele)
-        if (index !== -1) {
-            this.eles.splice(index, 1)
-            return true
-        } else {
-            return false
-        }
+        this.eles = this.eles.filter(e => e === ele )
     }
 
     crashDetect(fingers, player) {
         const b = player.bird
         const isCrash = fingers.eles.some(f => f.eles.some(e => isPointIn([b.x, b.y], getSpace(e))))
 
-        if (isCrash && this.player.life > 0) {
-            this.player.life--
+        if (isCrash && player.life > 0) {
+            player.life--
             log('GAME OVER !')
         }
     }
 
-    update() {
-        if (this.player.life > 0) {
-            this.crashDetect(this.fingers, this.player)
-            this.eles.forEach(ele => ele.update())
-            const fs = this.fingers
-            if (fs.count === fs.cd) {
-                this.score++
-            }
-        } else {
-            this.eles.filter(ele => ele.constructor.name === 'Player').forEach(ele => ele.update())
-            // console.log(this.eles, this.eles.map(ele => ele.constructor.name))
-            this.g.registerAction('r', () => this.g.replaceScene(new SceneTitle(this.g)))
-            if (!this.gameover) {
-                this.eles.push(new Text(this.g, '按下 "R" 来重新开始 !', {x: 100, y: 305}))
-                this.eles.push(new Title(this.g, 'text_game_over', {x: 100, y: 200}))
-            }
-            this.gameover = true
+    gameOverUpdate() {
+        this.eles.filter(ele => ele.constructor.name === 'Player').forEach(ele => ele.update())
+        // console.log(this.eles, this.eles.map(ele => ele.constructor.name))
+        this.g.registerAction('r', () => this.g.replaceScene(new SceneTitle(this.g)))
+        if (!this.gameover) {
+            this.eles.push(new Text(this.g, '按下 "R" 来重新开始 !', {x: 100, y: 305}))
+            this.eles.push(new Title(this.g, 'text_game_over', {x: 100, y: 200}))
+        }
+        this.gameover = true
+    }
+
+    gamingUpdate() {
+        this.eles.forEach(ele => ele.update())
+        const fs = this.fingers
+        if (fs.count === fs.cd) {
+            this.score++
         }
     }
+
+    update() {
+        //console.log(this.player.life, this.player2.life)
+        if (this.player.life > 0) {
+            this.crashDetect(this.fingers, this.player)
+            this.gamingUpdate()
+        } else {
+            this.gameOverUpdate()
+        }
+    }
+
     draw() {
         this.eles.forEach(ele => ele.draw())
-        // console.log(this.eles[1].eles.length)
     }
+}
+
+
+class Scene2player extends ScenePlaying {
+    constructor(game) {
+        super(game)
+        this.g = game
+        this.player2 = new Player(this.g, {btn: 'i', initX: 150, color: 290})
+        this.eles.splice(2, 0, this.player2)
+    }
+    update() {
+        const isContinue = this.player.life > 0 || this.player2.life > 0
+
+        this.player.life > 0 && this.crashDetect(this.fingers, this.player)
+        this.player2.life > 0 && this.crashDetect(this.fingers, this.player2)
+
+        if (isContinue) {
+            this.gamingUpdate()
+        } else {
+            this.gameOverUpdate()
+        }
+    }
+
 }
 
 class Player {
     constructor(game, param) {
         this.g = game
-        this.initX = 200
-        this.x = 200
+        this.initX = param.initX || 200
+        this.x = this.initX
         this.y = 350
         this.vx = 0
         this.vy = 0
@@ -145,21 +129,23 @@ class Player {
         this.ay = 1.5
         this.angleFactor = 2
         this.speed = 5
-        this.bird = new Bird(game)
-        this.init()
+        this.bird = new Bird(game, {color: param.color})
         this.life = 1
         Object.assign(this, param)
+        this.init()
     }
 
     registerMove() {
         const g = this.g
         const s = this.speed
 
+        console.log(this.btn)
+
         const actionDict = [
-            {a: () => {this.x -= s}},
-            {d: () => {this.x += s}},
-            {w: () => {this.vy -= this.life > 0  ? s : 0}},
-            {s: () => {this.vy += this.life > 0 ? s : 0}},
+            //{a: () => {this.x -= s}},
+            //{d: () => {this.x += s}},
+            {[this.btn]: () => {this.vy -= this.life > 0 ? s : 0}},
+            //{s: () => {this.vy += this.life > 0 ? s : 0}},
         ]
 
         const keyOf = obj => Object.keys(obj)[0]
