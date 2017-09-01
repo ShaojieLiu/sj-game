@@ -73,6 +73,7 @@ class ScenePlaying extends GuaScene {
         this.g.hardness = 0
         this.player = new Player(this.g)
         this.score = 0
+        this.gameover = false
         this.eles = [
             new Sky(this.g),
             this.player,
@@ -108,18 +109,22 @@ class ScenePlaying extends GuaScene {
     }
 
     update() {
-        this.eles.forEach(ele => ele.update())
-        this.crashDetect(this.fingers, this.player)
         if (this.player.life > 0) {
+            this.crashDetect(this.fingers, this.player)
+            this.eles.forEach(ele => ele.update())
             const fs = this.fingers
             if (fs.count === fs.cd) {
                 this.score++
-                log(this.score)
             }
         } else {
-            this.g.registerAction('r', () => this.g.replaceScene(new ScenePlaying(this.g)))
-            this.eles.push(new Text(this.g, '按下 "R" 来重新开始 !', {x: 100, y: 305}))
-            this.eles.push(new Title(this.g, 'text_game_over', {x: 100, y: 200}))
+            this.eles.filter(ele => ele.constructor.name === 'Player').forEach(ele => ele.update())
+            // console.log(this.eles, this.eles.map(ele => ele.constructor.name))
+            this.g.registerAction('r', () => this.g.replaceScene(new SceneTitle(this.g)))
+            if (!this.gameover) {
+                this.eles.push(new Text(this.g, '按下 "R" 来重新开始 !', {x: 100, y: 305}))
+                this.eles.push(new Title(this.g, 'text_game_over', {x: 100, y: 200}))
+            }
+            this.gameover = true
         }
     }
     draw() {
