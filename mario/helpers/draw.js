@@ -29,7 +29,7 @@ const drawPixel = (canvas, p, offsetX, offsetY) => {
 }
 
 const drawBlock = (canvas, block, offsetX, offsetY) => {
-    log(block, block.length)
+    // log(block, block.length)
     offsetX *= 8
     offsetY *= 8
     for (let i = 0; i < 8; i++) {
@@ -69,8 +69,8 @@ const drawPage = (canvas) => {
 }
 
 const drawMario = (canvas, marioIndex) => {
-    const w = 2
-    const h = 4
+    const w = window.config.marioSize.w
+    const h = window.config.marioSize.h
     resizeAndClear(canvas, w, h)
 
     marioIndex = marioIndex || window.config.marioIndex
