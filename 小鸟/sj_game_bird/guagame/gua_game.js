@@ -95,7 +95,7 @@ class GuaGame {
         // next run loop
         setTimeout(function(){
             g.runloop()
-        }, 1000/window.fps)
+        }, 1000 / window.fps)
     }
     textureByName(name) {
         var g = this
@@ -115,7 +115,7 @@ class GuaGame {
         // 开始运行程序
         setTimeout(function(){
             g.runloop()
-        }, 1000/window.fps)
+        }, 1000 / window.fps)
     }
     replaceScene(scene) {
         this.scene = scene
