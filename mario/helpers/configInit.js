@@ -1,6 +1,6 @@
 const configInit = () => {
     window.config = {
-        pixelSize: 2,
+        pixelSize: 4,
         byteNum: 32768 + 16,
         marioSize: {
             w: 2,
