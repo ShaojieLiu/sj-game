@@ -1,5 +1,5 @@
 class Bird {
-    constructor(game) {
+    constructor(game, param) {
         this.w = 51
         this.h = 36
         this.x = 150
@@ -13,8 +13,9 @@ class Bird {
             {sy: 48},
             {sy: 72},
         ]
+        const color = param.color
         this.g = game
-        this.ani = new GuaAnimation(game, {name, cd, paramBase, frameConfig})
+        this.ani = new GuaAnimation(game, {name, cd, paramBase, frameConfig, color})
     }
 
     draw(x, y, deg) {
@@ -78,11 +79,12 @@ class Land {
 class FingerSystem {
     constructor(game) {
         this.g = game
-        this.cd = 40
+        this.cd = 30
         this.prev = 100
         this.count = 0
         this.index = 0
-        this.eles = [new Finger(this.g, {y: this.prev, sp: 350, v: -10})]
+        this.eles = []
+        //this.eles = [new Finger(this.g, {y: this.prev, sp: 350, v: -15})]
     }
 
     draw() {
@@ -93,8 +95,8 @@ class FingerSystem {
         this.eles.forEach(ele => ele.update())
         if (this.count > this.cd) {
             const y = Math.random() * 100 - 50 + this.prev
-            const sp = Math.random() * 200 + 150
-            const v = -10
+            const sp = Math.random() * 150 + 150
+            const v = -12
             this.eles.push(new Finger(this.g, {y, sp, v}))
             this.count = 0
             this.index++

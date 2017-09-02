@@ -39,13 +39,15 @@ class GuaGame {
         ctx.setTransform(1, 0, 0, 1, 0, 0)
     }
     drawFrame(img, param) {
-        const {sx, sy, swidth, sheight, x, y, deg, w, h} = param
+        const {sx, sy, swidth, sheight, x, y, deg, w, h, color} = param
         const ctx = this.context
         const rad = deg * 3.14 / 180
         ctx.setTransform(1, 0, 0, 1, 0, 0)
         ctx.translate(x, y)
         ctx.rotate(rad)
+        ctx.filter = `hue-rotate(${color}deg)`
         ctx.drawImage(img.texture.image, sx, sy, swidth, sheight, - w / 2, - h / 2, w, h)
+        ctx.filter = 'hue-rotate(0deg)'
         ctx.setTransform(1, 0, 0, 1, 0, 0)
         // console.log(x, y, w, h)
     }
