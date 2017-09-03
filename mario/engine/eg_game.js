@@ -30,7 +30,7 @@ class EgGame {
     runloop() {
         const fps = window.config.fps
         setTimeout(() => {
-            log('running', fps)
+            //log('running', fps)
             this.scene.update()
             this.scene.draw()
             this.runloop()
