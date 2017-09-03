@@ -13,15 +13,19 @@ class EgGame {
     update() {
 
     }
+
     draw() {
 
     }
+
     drawImage() {
 
     }
+
     replaceScene(scene) {
         this.scene = scene
     }
+
     __start() {
         this.runCallback()
         this.runloop()

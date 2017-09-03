@@ -24,6 +24,13 @@ class SceneEditor extends Scene {
         this.init()
     }
 
+    sceneLoad() {
+        const type = 'json'
+        const url = `./sceneDownload/scene.json`
+        const cb = arr => this.b4scene = arr || []
+        loadData(cb, url, type)
+    }
+
     init() {
         this.blocks = [
             'del',
@@ -33,6 +40,7 @@ class SceneEditor extends Scene {
             'brick4',
         ]
         this.b4scene = []
+        this.sceneLoad()
         this.register()
         this.regDownload()
     }
