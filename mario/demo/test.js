@@ -1,4 +1,7 @@
 /**
+ * Created by liushaojie on 2017/9/4.
+ */
+/**
  * Created by liushaojie on 2017/9/2.
  */
 
@@ -29,7 +32,6 @@ const __main = () => {
         game.replaceScene(sceneEditor)
     }
     const game = new EgGame(30, images, afterLoad)
-    const itemCanvas = e('#itemPackage')
-    const sceneCanvas = e('#editingScene')
-    const sceneEditor = new SceneEditor(game, itemCanvas, sceneCanvas)
+    const sceneCanvas = e('#testScene')
+    const sceneEditor = new ScenePlay(game, sceneCanvas)
 }

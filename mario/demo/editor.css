@@ -1,3 +1,35 @@
+
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 960px;
+}
+.ctn{
+    width: 100%;
+}
+.canvas-ctn{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.ctrl-ctn{
+    display: flex;
+    justify-content: space-around;
+    align-items: baseline;
+}
+#range-show, #range-prev, #range-next{
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+}
+#input-range, #input-name{
+    display: flex;
+    flex: auto;
+}
+
 input[type=range] {
     -webkit-appearance: none;
     margin: 18px 0;
