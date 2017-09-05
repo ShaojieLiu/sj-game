@@ -28,8 +28,8 @@ class SceneEditor extends Scene {
         this.regDownload()
     }
 
-    b4sceneDel(x, y) {
-        this.b4scene = this.b4scene.filter(b => {
+    delBlock(x, y) {
+        this.sceneMap = this.sceneMap.filter(b => {
             return !(b.x === x && b.y ===y)
         })
     }
@@ -39,7 +39,7 @@ class SceneEditor extends Scene {
         btn.addEventListener('click', () => {
             const input = e('#input-name')
             const name = input.value
-            const storageObj = this.b4scene
+            const storageObj = this.sceneMap
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(storageObj))
             btn.setAttribute("href", dataStr)
             btn.setAttribute("download", name)
@@ -54,10 +54,10 @@ class SceneEditor extends Scene {
         const x = Math.floor(ev.offsetX / s) + ox
         const y = Math.floor(ev.offsetY / s) + oy
         const name = this.blocks[i]
-        this.b4sceneDel(x, y)
-        this.b4scene.push({x, y, name})
-        name === 'del' && this.b4sceneDel(x, y)
-        log('b4scene', this.b4scene)
+        this.delBlock(x, y)
+        this.sceneMap.push({x, y, name})
+        name === 'del' && this.delBlock(x, y)
+        log('sceneMap', this.sceneMap)
     }
 
     register() {
@@ -82,7 +82,7 @@ class SceneEditor extends Scene {
     drawItemCanvas() {
         const iC = this.iCanvas
         this.clear(iC)
-        this.blocks.map((b, i) => this.drawBlock(iC, b, i, 0))
+        this.blocks.map((b, i) => this.drawBlock(b, i, 0, {canvas: iC}))
     }
 
     draw() {

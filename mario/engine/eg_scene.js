@@ -6,12 +6,13 @@ class Scene{
         this.size = 64
         this.offsetX = 0
         this.offsetY = 0
+        this.eles = []
     }
 
-    sceneLoad() {
+    mapLoad() {
         const type = 'json'
         const url = `./sceneDownload/scene.json`
-        const cb = arr => this.b4scene = arr || []
+        const cb = arr => this.sceneMap = arr || []
         loadData(cb, url, type)
     }
 
@@ -42,14 +43,19 @@ class Scene{
         ctx.fillRect(0, 0, w, h)
     }
 
-    drawBlock(canvas, name, x, y) {
+    drawBlock(name, x, y, option) {
+        const o = option || {}
+        const canvas = o.canvas || this.sCanvas
+        const w = o.w || 1
+        const h = o.h || 1
+        y = y - h + 1
         const size = this.size
         const g = this.g
         const images = g.images
         const c = canvas
         const ctx = c.getContext('2d')
         if (name !== 'del') {
-            ctx.drawImage(images[name], x * size, y * size, size, size)
+            ctx.drawImage(images[name], x * size, y * size, w * size, h * size)
         }
     }
 
@@ -58,38 +64,25 @@ class Scene{
         const oy = this.offsetY
         this.clear(this.sCanvas)
         this.drawBG(this.sCanvas)
-        this.b4scene.map(b => this.drawBlock(this.sCanvas, b.name, b.x - ox, b.y - oy))
+        this.sceneMap.map(b => this.drawBlock(b.name, b.x - ox, b.y - oy, {canvas: this.sCanvas}))
     }
 
     init() {
-        this.b4scene = []
-        this.sceneLoad()
+        this.count = -1
+        this.sceneMap = []
+        this.mapLoad()
     }
 
     update() {
-
+        this.count++
+        this.eles.map(ele => ele.update())
     }
 
     draw() {
         this.drawSceneCanvas()
+        this.eles.map(ele => ele.draw())
     }
 }
 
-class ScenePlay extends Scene {
-    constructor(game, sceneCanvas) {
-        super(game)
-        this.g = game
-        this.sCanvas = sceneCanvas
-        this.init()
-    }
 
-    init() {
-        super.init()
-        this.regScroll()
-    }
-
-    update() {
-        // log(this.b4scene)
-    }
-}
 
