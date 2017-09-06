@@ -28,6 +28,34 @@ class Scene{
         es('.range-btn').map(btn => btn.addEventListener('click', setOffset))
     }
 
+    regActionInit() {
+        this.action = {}
+        this.keydown = {}
+        window.addEventListener('keydown', ev => {
+            const k = ev.key
+            this.keydown[k] = true
+        })
+
+        window.addEventListener('keyup', ev => {
+            const k = ev.key
+            this.keydown[k] = false
+        })
+    }
+
+    regAction(key, cbPress, cbUp = () => {}) {
+        this.action[key] = {}
+        this.action[key].cbPress = cbPress
+        this.action[key].cbUp = cbUp
+        log(this.action)
+    }
+
+    doAction() {
+        map(this.action, (cb, k) => {
+            log(k, this.keydown[k])
+            this.keydown[k] ? cb.cbPress() : cb.cbUp()
+        })
+    }
+
     clear(canvas) {
         const c = canvas
         const ctx = c.getContext('2d')
@@ -71,11 +99,13 @@ class Scene{
         this.count = -1
         this.sceneMap = []
         this.mapLoad()
+        this.regActionInit()
     }
 
     update() {
         this.count++
         this.eles.map(ele => ele.update())
+        this.doAction()
     }
 
     draw() {

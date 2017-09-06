@@ -68,12 +68,61 @@ class Mario extends Player{
         this.maxCount = series.length
     }
 
-    init() {
-        super.init()
-        this.x = 2
-        this.y = 7
-        this.animationInit()
+    jump() {
+        if (!this.jumping) {
+            this.vy += - 1
+        }
+        this.jumping = true
     }
 
+    actionInit() {
+        const s = this.scene
+        s.regAction('d', () => this.vx += 0.04)
+        s.regAction('a', () => this.vx += - 0.04)
+        s.regAction('w', () => this.jump(), () => this.jumping = false)
+    }
 
+    paramInit() {
+        this.x = 2
+        this.y = 7
+        this.vx = 0
+        this.vy = 0
+        this.ax = 0
+        this.ay = 0
+        // 这是摩擦力系数, 摩擦力与速度有关
+        this.mx = - 0.2
+        this.my = - 0.05
+        // 这是重力
+        this.gy = 0.15
+    }
+
+    posUpdate() {
+        const { ax, ay, mx, my, vx, vy, gy } = this
+        // 横向加速与摩擦
+        const mxf = vx * mx
+        this.vx += ax + mxf
+        // 重力加速度
+        this.vy += ay + gy
+        // 位置与速度
+        this.x += vx
+        this.y += vy
+        // 缸体
+        log(vy)
+        if (this.y >= 7 && vy >= 0) {
+            this.vy = 0
+            this.y = 7
+        }
+    }
+
+    init() {
+        super.init()
+        this.paramInit()
+        this.animationInit()
+        this.actionInit()
+    }
+
+    update() {
+        super.update()
+        this.posUpdate()
+    }
 }
