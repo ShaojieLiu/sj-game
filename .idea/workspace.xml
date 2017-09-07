@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="beccc80d-4c6d-4579-a8cc-44cebd6f2098" name="默认" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mario/engine/eg_player.js" afterPath="$PROJECT_DIR$/mario/engine/eg_player.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mario/engine/eg_scene.js" afterPath="$PROJECT_DIR$/mario/engine/eg_scene.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mario/sceneDownload/scene.json" afterPath="$PROJECT_DIR$/mario/sceneDownload/scene.json" />
-    </list>
+    <list default="true" id="beccc80d-4c6d-4579-a8cc-44cebd6f2098" name="默认" comment="" />
     <ignored path="sj-game.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -422,7 +417,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="3" y="31" width="1268" height="719" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14354451" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
